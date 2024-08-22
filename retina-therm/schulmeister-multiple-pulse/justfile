@@ -1,0 +1,8 @@
+run-cw:
+  retina-therm temperature-rise CONFIG-schulmeister-multi_pulse_modeling-CW.yml
+run-mp:
+  retina-therm multiple-pulse CONFIG-schulmeister-multi_pulse_modeling-MP.yml
+truncate-mp:
+  cd output/MP && retina-therm truncate-temperature-history-file *Tvst.txt --threshold 0.01
+run-damage:
+  ls output/MP/*Tvst* | sed 's/\.threshold$//' | sort | uniq -c | grep '^\s*1\s' | gawk '{print $2}' | xargs Arrhenius-cli calc-threshold --write-threshold-profiles --T0 310.15 --A 1.05e95 --Ea 5.99e5

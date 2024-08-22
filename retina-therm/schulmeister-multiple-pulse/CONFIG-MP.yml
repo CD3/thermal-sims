@@ -1,0 +1,56 @@
+cw_file : $( 'short' if ${tau}.to("ms").magnitude < 10 else 'long' )
+input_file:
+  '@batch':
+     - output/CW/1.5_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/2_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/3_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/4_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/5_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/6_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/7_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/10_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/15_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/20_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/40_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/70_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/100_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/150_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/200_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/250_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/300_milliradian-25_micrometer-Tvst-$($cw_file).txt
+     - output/CW/350_milliradian-25_micrometer-Tvst-$($cw_file).txt
+output_file: 'output/MP/{c[tau]}-{c[PRF]}-{c[N]}-{config_id}-Tvst.txt'
+output_config_file: 'output/MP/{c[tau]}-{c[PRF]}-{c[N]}-{config_id}-CONFIG.yml'
+remove: # prune exposures that are longer than the CW temperature history
+  - $(( (${/cw_file} == 'long') and (${/tmax}.to('s').magnitude > 1000) ))
+  - $(( (${/cw_file} == 'short') and (${/tmax}.to('s').magnitude > 200) ))
+T: $(((${N}-1)*${t0} + ${tau}).to("s"))
+cooldown_time: 1 s
+tmax: $((${T} + ${cooldown_time} ).to("s"))
+---
+t0: $( (1/${PRF}).to("s") )
+tau:
+  '@batch':
+    - 1 ms
+    - 10 ms
+PRF:
+  '@batch':
+    - 1 Hz
+    - 50 Hz
+    - 100 Hz
+N :
+  '@batch':
+    - 1
+    - 2
+    - 4
+    - 8
+    - 16
+    - 32
+    - 64
+    - 128
+    - 256
+    - 512
+    - 1024
+    - 2048
+    - 4096
+    - 8000
